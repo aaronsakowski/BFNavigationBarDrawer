@@ -24,13 +24,16 @@
 {
     [super viewDidLoad];
 	self.navigationItem.leftBarButtonItem = self.editButtonItem;
-
+    
 	UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
 	self.navigationItem.rightBarButtonItem = addButton;
 	
 	
 	// Init a drawer with default size
-	drawer = [[BFNavigationBarDrawer alloc] init];
+    //	drawer = [[BFNavigationBarDrawer alloc] init];
+    UIView *redView = [[UIView alloc] init];
+    [redView setBackgroundColor:[UIColor redColor]];
+    drawer = [[BFNavigationBarDrawer alloc] initWithCustomView:redView frame:CGRectMake(0, 0, 320, 100)];
 	
 	// Assign the table view as the affected scroll view of the drawer.
 	// This will make sure the scroll view is properly scrolled and updated
@@ -43,7 +46,7 @@
 	UIBarButtonItem *button3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(action:)];
 	UIBarButtonItem *button4 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:0];
 	UIBarButtonItem *button5 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(action:)];
-	drawer.items = @[button1, button2, button3, button4, button5];
+	drawer.dropDownToolbar.items = @[button1, button2, button3, button4, button5];
 	
 }
 
@@ -98,7 +101,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-
+    
 	NSDate *object = _objects[indexPath.row];
 	cell.textLabel.text = [object description];
     return cell;

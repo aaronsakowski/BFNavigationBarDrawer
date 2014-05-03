@@ -23,6 +23,16 @@
     return self;
 }
 
+- (id)initWithCustomView:(UIView *)customView frame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if(self){
+        self.dropDownCustomView = customView;
+        [self setup];
+    }
+    return self;
+}
+
 - (id)initWithCoder:(NSCoder *)decoder {
     if (self = [super initWithCoder:decoder]) {
         [self setup];
@@ -40,6 +50,17 @@
 	// BFNavigationBarDrawbar is a UIToolbar subclass to have the same design as regular bars and to simply
 	// be able to add UIBarButtonItems (a navigation bar is designed to have a title in the middle and more
 	// difficult to use as a drawer). UIToolbars don't have a border on the bottom side, so we have to add one.
+    
+    self.dropDownToolbar = [[UIToolbar alloc] initWithFrame:self.bounds];
+    self.dropDownToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self addSubview:self.dropDownToolbar];
+    
+    if(self.dropDownCustomView){
+        [self.dropDownCustomView setFrame:self.bounds];
+        self.dropDownCustomView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self addSubview:self.dropDownCustomView];
+    }
+    
 	UIView *lineView = [[UIView alloc] init];
 	lineView.backgroundColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.3];
 	lineView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -56,7 +77,7 @@
 - (void)setScrollView:(UIScrollView *)scrollView {
 	if (_scrollView != scrollView) {
 		_scrollView = scrollView;
-
+        
 	}
 }
 

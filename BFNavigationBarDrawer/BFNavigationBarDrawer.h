@@ -8,10 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BFNavigationBarDrawer : UIToolbar
+@interface BFNavigationBarDrawer : UIView
 
 @property (nonatomic, readonly, getter=isVisible) BOOL visible;
 @property (nonatomic) UIScrollView *scrollView;
+@property (nonatomic, strong) UIToolbar *dropDownToolbar;
+@property (nonatomic, strong) UIView *dropDownCustomView;
+
+- (id)initWithCustomView:(UIView *)customView frame:(CGRect)frame;
 
 - (void)showFromNavigationBar:(UINavigationBar *)bar animated:(BOOL)animated;
 - (void)hideAnimated:(BOOL)animated;
