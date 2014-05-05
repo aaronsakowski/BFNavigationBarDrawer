@@ -166,7 +166,6 @@
 	// Place the drawer behind the navigation bar at the beginning of the animation.
 	if (animated) {
 		self.frame = [self initialFrameForNavigationBar:bar];
-        NSLog(@"%f, %f, %f, %f", self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
 	}
 	
 	// This is a bit messy. Because navigation and toolbars are now translucent, we can't just resize the afftected scroll view
@@ -192,7 +191,6 @@
 	
 	void (^animations)() = ^void() {
 		self.frame = [self finalFrameForNavigationBar:bar];
-        NSLog(@"%f, %f, %f, %f", self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
 		_scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, _scrollView.contentOffset.y - height);
 	};
 	
