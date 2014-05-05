@@ -18,6 +18,7 @@
 - (id)initWithCustomView:(UIView *)customView frame:(CGRect)frame;
 
 - (void)showFromNavigationBar:(UINavigationBar *)bar animated:(BOOL)animated;
+- (void)showFromNavigationBar:(UINavigationBar *)bar parentView:(UIView *)view animated:(BOOL)animated;
 - (void)hideAnimated:(BOOL)animated;
 
 @end

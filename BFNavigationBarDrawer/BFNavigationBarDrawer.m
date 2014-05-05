@@ -12,6 +12,7 @@
 
 @implementation BFNavigationBarDrawer {
 	UINavigationBar *parentBar;
+    UIView *parentView;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -108,6 +109,7 @@
 	// Place the drawer behind the navigation bar at the beginning of the animation.
 	if (animated) {
 		self.frame = [self initialFrameForNavigationBar:bar];
+        NSLog(@"%f, %f, %f, %f", self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
 	}
 	
 	// This is a bit messy. Because navigation and toolbars are now translucent, we can't just resize the afftected scroll view
@@ -133,6 +135,7 @@
 	
 	void (^animations)() = ^void() {
 		self.frame = [self finalFrameForNavigationBar:bar];
+        NSLog(@"%f, %f, %f, %f", self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
 		_scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, _scrollView.contentOffset.y - height);
 	};
 	
@@ -147,6 +150,62 @@
 		completion(YES);
 	}
 	
+}
+
+- (void)showFromNavigationBar:(UINavigationBar *)bar parentView:(UIView *)view animated:(BOOL)animated
+{
+    parentView = view;
+    parentBar = bar;
+	if (!parentView || !parentBar) {
+		NSLog(@"Cannot display navigation bar from nil.");
+		return;
+	}
+	
+	[parentView addSubview:self];
+	
+	// Place the drawer behind the navigation bar at the beginning of the animation.
+	if (animated) {
+		self.frame = [self initialFrameForNavigationBar:bar];
+        NSLog(@"%f, %f, %f, %f", self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
+	}
+	
+	// This is a bit messy. Because navigation and toolbars are now translucent, we can't just resize the afftected scroll view
+	// to make place for the drawer. Instead we have to change the contentInset property of the scroll view. Increasing the
+	// contentInset.top value will make sure, that the drawer doesn't cover the first cell in a table view, but the scroll view
+	// can still scroll under the drawer. Changing the contentInset however can't be animated unfortunately (or it can, by putting
+	// it in an animation block, but that might break). To fix this, we have to animate the contentOffset property instead. First,
+	// the contentOffset is changed in the opposite direction with no animation, basically negating the contentInset change. Then,
+	// it is changed a second time, this time animated. Calculating the correct offsets is a bit tricky, because it depends on
+	// whether or not the content size is bigger than the scroll view's height and whether the content is scrolled all the way to
+	// the top, or the bottom. This calculation could probably be simplified, but this seems to be correct for now.
+	CGFloat height = self.frame.size.height;
+	CGFloat visible = _scrollView.bounds.size.height - _scrollView.contentInset.top - _scrollView.contentInset.bottom;
+	CGFloat diff = visible - _scrollView.contentSize.height;
+	CGFloat fix = MAX(0.0, MIN(height, diff));
+	
+	// Increase the top inset of the affected scroll view, so the first cell is not covered by the drawer.
+	UIEdgeInsets insets = _scrollView.contentInset;
+	insets.top += height;
+	_scrollView.contentInset = insets;
+	_scrollView.scrollIndicatorInsets = insets;
+	_scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, _scrollView.contentOffset.y + fix);
+	
+	void (^animations)() = ^void() {
+		self.frame = [self finalFrameForNavigationBar:bar];
+        NSLog(@"%f, %f, %f, %f", self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
+		_scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, _scrollView.contentOffset.y - height);
+	};
+	
+	void (^completion)(BOOL) = ^void(BOOL finished) {
+		_visible = YES;
+	};
+	
+	if (animated) {
+		[UIView animateWithDuration:kAnimationDuration animations:animations completion:completion];
+	} else {
+		animations();
+		completion(YES);
+	}
 }
 
 - (void)hideAnimated:(BOOL)animated {
